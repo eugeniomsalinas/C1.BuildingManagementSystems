@@ -1,9 +1,17 @@
-﻿namespace C1.BuildingManagementSystems.Contracts
+﻿using C1.BuildingManagementSystems.Contracts.Models.Requests;
+using C1.BuildingManagementSystems.Contracts.Models.Responses;
+using Microsoft.AspNetCore.Mvc;
+
+namespace C1.BuildingManagementSystems.Contracts
 {
     public interface IBuildingMetricsService
     {
-        Task<string> Get(string request);
+        //Task<GetMetricsResponse> Get(GetMetricsRequest request);
 
-        Task<string> Push(string request);
+        //Task<PushMetricResponse> Push(PushMetricRequest request);
+
+        Task<IActionResult> Get(GetMetricsRequest request);
+
+        Task<IActionResult> Push(PushMetricRequest request);
     }
 }

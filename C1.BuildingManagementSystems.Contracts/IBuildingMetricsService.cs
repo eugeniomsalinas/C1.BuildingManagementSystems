@@ -6,10 +6,6 @@ namespace C1.BuildingManagementSystems.Contracts
 {
     public interface IBuildingMetricsService
     {
-        //Task<GetMetricsResponse> Get(GetMetricsRequest request);
-
-        //Task<PushMetricResponse> Push(PushMetricRequest request);
-
         Task<IActionResult> Get(GetMetricsRequest request);
 
         Task<IActionResult> Push(PushMetricRequest request);

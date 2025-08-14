@@ -20,16 +20,18 @@ namespace C1.BuildingManagementSystems.Controllers
         {
             var result = await _buildingMetricsServiceLogic.GetRecentMetricEntries();
 
-            return Ok();
+            return Ok(result.Metrics);
         }
 
         [HttpPost]
         [Route("PushMetric")]
         public async Task<IActionResult> Push(PushMetricRequest request)
         {
+            //TODO Add call to private method that validates the request data, if incorrect return BADREQUEST
+
             var result = await _buildingMetricsServiceLogic.PushMetricEntry(request);
 
-            return Ok();
+            return Ok(result);
         }
     }
 }

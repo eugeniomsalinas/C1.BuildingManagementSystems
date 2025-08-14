@@ -3,6 +3,7 @@ using System;
 using C1.BuildingManagementSystems.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace C1.BuildingManagementSystems.Migrations
 {
     [DbContext(typeof(BmsDbContext))]
-    partial class BmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250814053422_init1_2")]
+    partial class init1_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -26,6 +26,8 @@ namespace C1.BuildingManagementSystems.Logic
                 var result = await _metricEntriesRepository.GetMetricEntriesAsync();
                 getMetricsResponse.Metrics = result;
 
+                // TODO return a summary report
+
                 return getMetricsResponse;
             }
             catch (Exception ex) 
@@ -49,6 +51,8 @@ namespace C1.BuildingManagementSystems.Logic
         {
             PushMetricResponse response = new PushMetricResponse();
 
+            // CHECK IF METRIC FOR GIVEN TYPE IS OUT OF RANGE
+            // TODO Extract this logic into it's own methods later
             if (Request.MetricEnums == MetricEnums.Temperature && (Request.MetricValue > 50 ||  Request.MetricValue < 35))
             {
                 var newLog = new LogEntry()

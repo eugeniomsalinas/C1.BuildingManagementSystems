@@ -2,6 +2,6 @@
 {
     public class GetMetricsResponse : Response
     {
-        public List<MetricEntry> Metrics { get; set; }
+        public List<MetricAggregation> MetricsSummary { get; set; }
     }
 }

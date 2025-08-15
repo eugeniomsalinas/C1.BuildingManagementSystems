@@ -2,7 +2,7 @@
 
 namespace C1.BuildingManagementSystems.Contracts.Models.Requests
 {
-    public class GetMetricsRequest : Request
+    public class GetMetricsRequest
     {
         public int NumberofRecords { get; set; } = 20;
         public string SensorId { get; set; }

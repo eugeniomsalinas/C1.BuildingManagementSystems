@@ -2,12 +2,12 @@
 
 namespace C1.BuildingManagementSystems.Contracts.Models.Requests
 {
-    public  class PushMetricRequest : Request
+    public  class PushMetricRequest
     {
         public string SensorId { get; set; }
-        public MetricEnums MetricEnums { get; set; }
-        public double MetricValue { get; set; } = 0;
-        public string Note { get; set; }
-        public DateTime DateTime { get; set; }
+        public MetricEnums MetricEnum { get; set; }
+        public decimal MetricValue { get; set; } = 0;
+        public string? Note { get; set; }
+        public DateTime? DateTime { get; set; }
     }
 }

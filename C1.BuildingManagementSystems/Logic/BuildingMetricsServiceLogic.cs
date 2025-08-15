@@ -1,9 +1,11 @@
-﻿using C1.BuildingManagementSystems.Contracts.Models.Enums;
+﻿using C1.BuildingManagementSystems.Contracts.Models;
+using C1.BuildingManagementSystems.Contracts.Models.Enums;
 using C1.BuildingManagementSystems.Contracts.Models.Requests;
 using C1.BuildingManagementSystems.Contracts.Models.Responses;
 using C1.BuildingManagementSystems.DataAccess.Interfaces;
 using C1.BuildingManagementSystems.Logging.Model;
 using C1.BuildingManagementSystems.Logic.Interfaces;
+using System.Text.Json;
 
 namespace C1.BuildingManagementSystems.Logic
 {
@@ -23,10 +25,27 @@ namespace C1.BuildingManagementSystems.Logic
 
             try
             {
-                var result = await _metricEntriesRepository.GetMetricEntriesAsync();
-                getMetricsResponse.Metrics = result;
+                foreach(MetricEnums metricEnum in Enum.GetValues(typeof(MetricEnums)))
+                {
+                    var result = await _metricEntriesRepository.GetMetricEntriesAsync(metricEnum);
 
-                // TODO return a summary report
+                    if(result.Count > 0)
+                    {
+                        MetricAggregation metricAgg = new MetricAggregation();
+                        metricAgg.MetricEnum = metricEnum;
+                        metricAgg.LastHourCount = result.Count();
+                        metricAgg.Average = result.Average(x => x.MetricValue);
+                        metricAgg.Max = result.Select(x => x.MetricValue).Max();
+                        metricAgg.Min = result.Select(x => x.MetricValue).Min();
+                        getMetricsResponse.MetricsSummary.Add(metricAgg);
+                    }
+                }
+
+                if(getMetricsResponse.MetricsSummary == null)
+                {
+                    getMetricsResponse.Message = "No metrics were reported within the last hour.";
+                    getMetricsResponse.Success = true;
+                }
 
                 return getMetricsResponse;
             }
@@ -51,27 +70,55 @@ namespace C1.BuildingManagementSystems.Logic
         {
             PushMetricResponse response = new PushMetricResponse();
 
-            // CHECK IF METRIC FOR GIVEN TYPE IS OUT OF RANGE
-            // TODO Extract this logic into it's own methods later
-            if (Request.MetricEnums == MetricEnums.Temperature && (Request.MetricValue > 50 ||  Request.MetricValue < 35))
-            {
-                var newLog = new LogEntry()
-                {
-                    Message = Request.MetricValue > 50 ? "Temperature is too high!" : "Temperature is too low!",
-                    EntryDate = Request.DateTime,
-                    Type = "ALERT"
-                };
-
-                await _loggingRepository.LogMessageAsync(newLog);
-
-                response.AlertTriggered = true;
-            }
+            response.AlertTriggered = await ThresholdCheck(Request);
 
             var result = await _metricEntriesRepository.PushMetricEntryAsync(Request);
 
             response.MetricEntryId = result.MetricEntryId;
 
             return response;
+        }
+
+
+        public async Task<List<LogEntry>> GetRecentAlertsEntries()
+        {
+            var result = await _loggingRepository.GetRecentAlertsEntriesAsync();
+            return result;
+        }
+        
+        private async Task<bool> ThresholdCheck(PushMetricRequest Request)
+        {
+            if (Request.MetricEnum == MetricEnums.Temperature && (Request.MetricValue > 86 || Request.MetricValue < 35))
+            {
+                var newLog = new LogEntry()
+                {
+                    Message = Request.MetricValue > 86 ? "Temperature is too high!" : "Temperature is too low!",
+                    EntryDate = (DateTime)Request.DateTime,
+                    Type = "ALERT",
+                    Data = JsonSerializer.Serialize(Request)
+                };
+
+                await _loggingRepository.LogMessageAsync(newLog);
+
+                return true;
+            }
+
+            if (Request.MetricEnum == MetricEnums.Humidity && (Request.MetricValue > 60 || Request.MetricValue < 30))
+            {
+                var newLog = new LogEntry()
+                {
+                    Message = Request.MetricValue > 60 ? "Humidity is too high!" : "Humidity is too low!",
+                    EntryDate = (DateTime)Request.DateTime,
+                    Type = "ALERT",
+                    Data = JsonSerializer.Serialize(Request)
+                };
+
+                await _loggingRepository.LogMessageAsync(newLog);
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

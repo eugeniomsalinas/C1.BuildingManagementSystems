@@ -7,5 +7,7 @@ namespace C1.BuildingManagementSystems.DataAccess.Interfaces
         Task<List<LogEntry>> GetLogsAsync();
 
         Task<LogEntry> LogMessageAsync(LogEntry log);
+
+        Task<List<LogEntry>> GetRecentAlertsEntriesAsync();
     }
 }

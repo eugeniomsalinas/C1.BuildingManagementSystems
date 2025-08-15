@@ -22,6 +22,7 @@ namespace C1.BuildingManagementSystems.Logic
         public async Task<GetMetricsResponse> GetRecentMetricEntries()
         {
             GetMetricsResponse getMetricsResponse = new GetMetricsResponse();
+            List<MetricAggregation> metricsList = new List<MetricAggregation>();
 
             try
             {
@@ -37,11 +38,14 @@ namespace C1.BuildingManagementSystems.Logic
                         metricAgg.Average = result.Average(x => x.MetricValue);
                         metricAgg.Max = result.Select(x => x.MetricValue).Max();
                         metricAgg.Min = result.Select(x => x.MetricValue).Min();
-                        getMetricsResponse.MetricsSummary.Add(metricAgg);
+
+                        metricsList.Add(metricAgg);
                     }
                 }
 
-                if(getMetricsResponse.MetricsSummary == null)
+                getMetricsResponse.MetricsSummary = metricsList;
+
+                if (getMetricsResponse.MetricsSummary == null || getMetricsResponse.MetricsSummary.Count == 0)
                 {
                     getMetricsResponse.Message = "No metrics were reported within the last hour.";
                     getMetricsResponse.Success = true;

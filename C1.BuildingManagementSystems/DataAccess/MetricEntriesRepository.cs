@@ -33,8 +33,6 @@ namespace C1.BuildingManagementSystems.DataAccess
                 EntryDateTime = PushMetricRequest.DateTime
             };
 
-            int id = 0;
-
             _dbContext.MetricEntries.Add(newMetric);
             _dbContext.SaveChanges();
             
